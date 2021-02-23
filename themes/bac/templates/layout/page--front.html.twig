@@ -1,0 +1,87 @@
+{{ page.header }}
+{{ page.navigation }}
+
+{# Main lauout classes. #}
+<main>
+  <div class="home-bg overflow-hidden text-center">
+    <div class="row bg-overlay">
+      <div class="col-md-8 mx-auto mt-5 p-3 p-md-5">
+        <h1 class="home-title mb-3 white">The Global Leader</h1>
+        <h2 class="home-subtitle mb-5 white">In Sustainable Heat Transfer & Thermal Storage</h2>
+        <a class="btn btn-lg btn-green mb-2" href="/quote-request">
+          Request A Quote
+          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0" y="0" viewBox="0 0 11 20" xml:space="preserve" width="12px" style="vertical-align: sub; margin-left:10px;">
+            <style>.st0{fill:none;stroke:#FFFFFF;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}</style>
+            <g><path class="st0" d="M10 10l-9 9M1 1l9 9"/></g>
+          </svg>
+        </a>
+        <p>Get a complementary full inspection</p>
+      </div>
+      <div class="row text-center">
+        <span><u>We Represent:</u></span>
+      </div>
+      <div class="represent d-flex flex-wrap justify-content-evenly align-items-center col-lg-7 mx-auto">
+        <div class="mx-3 mb-3">
+          <a href="https://www.baltimoreaircoil.com/" target="_blank">
+            <img src="./{{ base_path ~ directory }}/assets/images/logos/bac.svg" width="75">
+          </a>
+        </div>
+        <div class="mx-3 mb-3">
+          <a href="https://amiad.com/" target="_blank">
+            <img src="./{{ base_path ~ directory }}/assets/images/logos/amiad.svg" width="200">
+          </a>
+        </div>
+        <div class="mx-3 mb-3">
+          <a href="https://www.eaton.com/" target="_blank">
+            <img src="./{{ base_path ~ directory }}/assets/images/logos/eaton.svg" width="175">
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{ page.content }}
+
+  <section class="home-resources">
+    <div class="container">
+      <h3 class="h2 text-center my-4">Resources</h3>
+      <div class="row">
+        <div class="col-md-4 mb-4">
+          <div class="card shadow">
+            <img class="mb-3 rounded img-fluid" src="{{ base_path ~ directory }}/assets/images/resources-bac.jpg" alt="Baltimore Air Coil">
+            <div class="text-center p-3">
+              <h4>Baltimore Air Coil</h4>
+              <h5>Cooling Towers, Fluid Coolers, Evaporative Condensers</h5>
+              <p>For over seven decades Baltimore Aircoil Company has been dedicated to the development of innovative, cost effective heat transfer solutions for its customers. </p>
+              <a href="https://www.baltimoreaircoil.com/" target="_blank">Click For More Information</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card shadow">
+              <img class="mb-3 rounded img-fluid" src="{{ base_path ~ directory }}/assets/images/resources-pep.jpg" alt="PEP Filters">
+              <div class="text-center p-3">
+                <h4>PEP Filters</h4>
+                <h5>Water Filtration Systems</h5>
+                <p>PEP Filters, a division of Amiad Filtration, Inc. offers a broad range of self-cleaning filter technologies including sand media filters, disc and screen filters, and centrifugal separators.</p>
+                <a href="http://www.pepfilters.com/" target="_blank">Click For More Information</a>
+              </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card shadow">
+              <img class="mb-3 rounded img-fluid" src="{{ base_path ~ directory }}/assets/images/resources-eaton.jpg" alt="Eaton">
+              <div class="text-center p-3">
+                <h4>EATON</h4>
+                <p>Eaton is dedicated to improving people’s lives and the environment with power management technologies that are more reliable, efficient, safe and sustainable.</p>
+                <a href="https://www.eaton.com/" target="_blank">Click For More Information</a>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+{{ page.footer }}

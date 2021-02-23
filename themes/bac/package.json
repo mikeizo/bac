@@ -1,0 +1,26 @@
+{
+  "name": "BAC",
+  "version": "1.0.0",
+  "description": "BAC theme.",
+  "private": true,
+  "keywords": [
+    "Drupal",
+    "theme"
+  ],
+  "scripts": {
+    "build:css": "gulp buildCss",
+    "watch:css": "gulp watchCss"
+  },
+  "dependencies": {
+    "autoprefixer": "^9.4.3",
+    "bootstrap": "^5.0.0-beta2",
+    "browser-sync": "^2.26.14",
+    "gulp": "^4.0.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-postcss": "^8.0.0",
+    "gulp-sass": "^4.0.2",
+    "gulp-sass-glob": "^1.1.0",
+    "gulp-sourcemaps": "^2.6.4",
+    "gulp-uglify": "^3.0.2"
+  }
+}

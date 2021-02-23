@@ -1,0 +1,15 @@
+global-css:
+  version: 1.x
+  css:
+    theme:
+      assets/css/style.css: {}
+
+global-js:
+  version: 1.x
+  js:
+    assets/js/scripts.js: {}
+
+google.fonts:
+  css:
+    theme:
+      https://fonts.googleapis.com/css2?family=Poppins:wght@200;400;700&display=swap: { type: external, minified: true }

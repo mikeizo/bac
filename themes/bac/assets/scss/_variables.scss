@@ -1,0 +1,29 @@
+$black: #32333c;
+$white: #FFFFFF;
+$gray: #eef2f5;
+$green: #0db04a;
+$blue: #0079c2;
+$light-blue: #00b8f0;
+
+$border-radius: 8px;
+
+.white {
+  color: $white;
+}
+
+.black {
+  color: $black;
+}
+
+.blue {
+  color: $blue;
+}
+
+.green {
+  color: $green;
+}
+
+.bg-dark {
+  background-color: $black;
+  color: $white;
+}

@@ -1,0 +1,50 @@
+{#
+/**
+ * @file
+ * Theme override to display a region.
+ *
+ * Available variables:
+ * - content: The content for this region, typically blocks.
+ * - attributes: HTML attributes for the region div.
+ * - region: The name of the region variable as defined in the theme's
+ *   .info.yml file.
+ *
+ * @see template_preprocess_region()
+ */
+#}
+
+{% if content %}
+  <footer>
+    <div class="footer p-5">
+      <div class="container">
+        <div class="row">
+          {{ content }}
+        </div>
+      </div>
+    </div>
+    <div class="subfooter py-4">
+      <div class="container text-center">
+        <div class="d-flex flex-wrap align-items-center justify-content-center">
+          <div class="px-2 mb-3">
+            <a href="https://www.usgbc.org/" target="_blank">
+              <img src="/{{ base_path ~ directory }}/assets/images/logos/leed.png" width="75">
+            </a>
+          </div>
+          <div class="px-2 mb-3">
+            <a href="https://www.coolingtechnology.org/" target="_blank">
+              <img src="/{{ base_path ~ directory }}/assets/images/logos/cti.png" width="75">
+            </a>
+          </div>
+          <div class="px-2 mb-3">
+            <a href="https://www.ahrinet.org/" target="_blank">
+              <img src="/{{ base_path ~ directory }}/assets/images/logos/ahri.png" width="200">
+            </a>
+          </div>
+        </div>
+        <div class="row">
+          <small>&copy; {{ 'now' | date('Y') }} Balticare, Inc.</small>
+        </div>
+      </div>
+    </div>
+  </footer>
+{% endif %}

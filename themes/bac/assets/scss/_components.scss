@@ -1,0 +1,95 @@
+.btn {
+  padding: 10px 25px;
+  border-radius: $border-radius;
+}
+.btn-green {
+  color: $white;
+  background-color: $green;
+  &:hover {
+    color: $white;
+    background-color: darken($color: $green, $amount: 10);
+  }
+}
+
+
+.views-more-link {
+  display: block;
+  margin-top: 15px;
+}
+.more-link {
+  text-align: center;
+}
+
+
+.nav-tabs {
+  text-align: center;
+  .nav-item {
+    .nav-link {
+      border-top-left-radius: $border-radius;
+      border-top-right-radius: $border-radius;
+      color: $black;
+    }
+    .active {
+      color: $light-blue;
+    }
+  }
+}
+
+
+.card {
+  border-radius: $border-radius;
+  border: none;
+}
+
+
+@media screen and (min-width: 1024px) {
+  .prod-image {
+    max-height: 200px;
+    overflow: hidden;
+    border-radius: $border-radius;
+  }
+}
+
+
+#productCarousel {
+  .carousel-inner {
+    background-color: $gray;
+    min-height: 225px;
+    @media screen and (min-width: 768px) {
+      min-height: 255px;
+    }
+    @media screen and (min-width: 1200px) {
+      min-height: 340px;
+    }
+  }
+  .carousel-indicators {
+    bottom: -50px;
+    button {
+      background-color: $blue;
+    }
+  }
+}
+
+
+.google-map {
+  overflow:hidden;
+  height: 300px;
+  position:relative;
+  @media screen and (min-width: 992px) {
+    height: 375px;
+  }
+  iframe{
+    left:0;
+    top:0;
+    height:100%;
+    width:100%;
+    position:absolute;
+  }
+}
+
+
+.unformatted-list:not(:last-child) {
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid $gray;
+}

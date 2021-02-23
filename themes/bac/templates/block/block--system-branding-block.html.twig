@@ -1,0 +1,36 @@
+{#
+/**
+ * @file
+ * Default theme implementation for a branding block.
+ *
+ * Each branding element variable (logo, name, slogan) is only available if
+ * enabled in the block configuration.
+ *
+ * Available variables:
+ * - site_logo: Logo for site as defined in Appearance or theme settings.
+ * - site_name: Name for site as defined in Site information settings.
+ * - site_slogan: Slogan for site as defined in Site information settings.
+ *
+ * @ingroup themeable
+ */
+#}
+{% if site_logo %}
+  <a class="navbar-brand" href="{{ path('<front>') }}" rel="home">
+    <img src="{{ site_logo }}" alt="{{ 'Home'|t }}" />
+  </a>
+{% endif %}
+{% if site_name %}
+  <a href="{{ path('<front>') }}" rel="home">{{ site_name }}</a>
+{% endif %}
+{% if site_slogan %}
+  {{ site_slogan }}
+{% endif %}
+
+<button class="navbar-toggler" id="nav-mobile" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+  <div id="nav-icons">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</button>

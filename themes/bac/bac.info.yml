@@ -1,0 +1,17 @@
+screenshot: screenshot.png
+name: BAC Theme
+type: theme
+base theme: false
+description: 'BAC Theme'
+core_version_requirement: ^8 || ^9
+
+libraries:
+  - bac/global-css
+  - bac/global-js
+  - bac/google.fonts
+
+regions:
+  navigation: Navigation
+  content: Content
+  sidebar_right: 'Sidebar Right'
+  footer: Footer

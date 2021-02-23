@@ -1,0 +1,30 @@
+bac.xs:
+  label: xs
+  mediaQuery: '(max-width: 575px)'
+  weight: 1
+  multipliers:
+  - 1x
+bac.sm:
+  label: sm
+  mediaQuery: '(min-width: 576px)'
+  weight: 2
+  multipliers:
+  - 1x
+bac.md:
+  label: md
+  mediaQuery: '(min-width: 768px)'
+  weight: 3
+  multipliers:
+  - 1x
+bac.lg:
+  label: lg
+  mediaQuery: '(min-width: 992px)'
+  weight: 4
+  multipliers:
+  - 1x
+bac.xl:
+  label: xl
+  mediaQuery: '(min-width: 1200px)'
+  weight: 5
+  multipliers:
+  - 1x
