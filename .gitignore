@@ -44,3 +44,4 @@ sites/simpletest
 # Added ignore
 node_modules/
 /example.gitignore
+.vscode
