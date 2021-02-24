@@ -41,11 +41,13 @@
 
 <div id="productCarousel" class="carousel slide mb-4" data-bs-ride="false">
   <div class="carousel-indicators">
-    {% if multiple %}
-      {% for key in items|keys %}
-        <button type="button" data-bs-target="#productCarousel" data-bs-slide-to="{{ key }}" aria-label="Slide {{ key }}"></button>
-      {% endfor %}
-    {% endif %}
+    {% for i in 0..items|length - 1 %}
+      {% if i == 0 %}
+        <button type="button" data-bs-target="#productCarousel" data-bs-slide-to="{{i}}" class="active" aria-current="true" ></button>
+      {% else %}
+        <button type="button" data-bs-target="#productCarousel" data-bs-slide-to="{{i}}" ></button>
+      {% endif %}
+    {% endfor %}
   </div>
   <div class="carousel-inner d-flex align-items-center">
     {% if multiple %}

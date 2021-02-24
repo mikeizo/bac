@@ -1,3 +1,3 @@
 jQuery( "#nav-mobile" ).click(function() {
-    jQuery('#nav-icons').toggleClass('open');
+  jQuery('#nav-icons').toggleClass('open');
 });
