@@ -165,8 +165,11 @@
   #search-dropdown {
     cursor: pointer;
   }
-  .dropdown-menu {
+  .dropdown-menu[data-bs-popper] {
     right: 0;
+    left: unset;
+  }
+  .dropdown-menu {
     padding: 15px;
     form {
       width: 280px;

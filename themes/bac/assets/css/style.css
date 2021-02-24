@@ -7723,8 +7723,11 @@ legend {
 #search-container #search-dropdown {
   cursor: pointer; }
 
-#search-container .dropdown-menu {
+#search-container .dropdown-menu[data-bs-popper] {
   right: 0;
+  left: unset; }
+
+#search-container .dropdown-menu {
   padding: 15px; }
   #search-container .dropdown-menu form {
     width: 280px;
