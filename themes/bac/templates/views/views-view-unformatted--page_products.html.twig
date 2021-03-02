@@ -1,0 +1,39 @@
+{#
+/**
+ * @file
+ * Default theme implementation to display a view of unformatted rows.
+ *
+ * Available variables:
+ * - title: The title of this group of rows. May be empty.
+ * - rows: A list of the view's row items.
+ *   - attributes: The row's HTML attributes.
+ *   - content: The row's content.
+ * - view: The view object.
+ * - default_row_class: A flag indicating whether default classes should be
+ *   used on rows.
+ *
+ * @see template_preprocess_views_view_unformatted()
+ *
+ * @ingroup themeable
+ */
+#}
+
+<div class="row mb-5">
+  <div class="col-md-12">
+    <div class="alert alert-info text-center" role="alert">
+      The Product Selection Software contains performance and technical data for BAC’s evaporative cooling products.
+      <a class="btn btn-green-hollow " href="https://www11.baltimoreaircoil.com/pss/web/home/" target="_blank">
+        View Product Selection Software
+      </a>
+    </div>
+  </div>
+</div>
+
+{% if title %}
+  <h3>{{ title }}</h3>
+{% endif %}
+{% for row in rows %}
+  <div class="row unformatted-list">
+    {{- row.content -}}
+  </div>
+{% endfor %}

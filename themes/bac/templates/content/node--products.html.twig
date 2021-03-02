@@ -91,7 +91,12 @@
       {{ content.field_product_image }}
     </div>
     <div class="col-md-12">
-      <a class="btn btn-green mt-4" href="{{ content.field_product_pdf }}" target="_blank">Download PDF</a>
+      {% if content.field_product_pdf[0] %}
+        <a class="btn btn-green mt-4" href="{{ content.field_product_pdf }}" target="_blank">View Brochure</a>
+      {% endif %}
+      {% if content.field_product_parts[0] is not empty %}
+        <a class="btn btn-green-hollow mt-4" href="{{ content.field_product_parts }}" target="_blank">View Parts Guide</a>
+      {% endif %}
     </div>
   </div>
 </article>

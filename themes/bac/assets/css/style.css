@@ -7552,6 +7552,13 @@ legend {
     color: #FFFFFF;
     background-color: #098136; }
 
+.btn-green-hollow {
+  border: 1px solid #0db04a;
+  color: #0db04a; }
+  .btn-green-hollow:hover {
+    color: #FFFFFF;
+    background-color: #0db04a; }
+
 .views-more-link {
   display: block;
   margin-top: 15px; }

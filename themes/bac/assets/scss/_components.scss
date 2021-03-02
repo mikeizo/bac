@@ -10,6 +10,14 @@
     background-color: darken($color: $green, $amount: 10);
   }
 }
+.btn-green-hollow {
+  border: 1px solid $green;
+  color: $green;
+  &:hover {
+    color: $white;
+    background-color: $green;
+  }
+}
 
 
 .views-more-link {
