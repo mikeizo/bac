@@ -7690,6 +7690,9 @@ legend {
     color: #32333c; }
     .navbar-expand-lg .navbar-custom .nav-link:hover {
       background-color: #eef2f5; }
+  @media (max-width: 1200px) and (min-width: 991px) {
+    .navbar-expand-lg .navbar-custom .nav-link {
+      padding: 40px 10px; } }
   .navbar-expand-lg .navbar-custom .dropdown-menu {
     padding-top: 0;
     padding-bottom: 0;
@@ -7742,7 +7745,7 @@ legend {
     align-items: center;
     justify-content: space-between; }
 
-@media screen and (max-width: 992px) {
+@media screen and (max-width: 991px) {
   #search-container {
     display: none; } }
 
