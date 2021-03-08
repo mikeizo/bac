@@ -45,24 +45,24 @@ function calculate() {
 		errorMessageText += '<li>Flow (Gallons Per Minute) must be a number.</li>';
 	}
 	if (isNaN(hwtf)) {
-		errorMessageText += '<li>Hot Water Temperature&#176;F must be a number.</li>';
+		errorMessageText += '<li>Hot Water Temperature must be a number.</li>';
 	}
 	if (isNaN(cwtf)) {
-		errorMessageText += '<li>Cold Water Temperature&#176;F must be a number.</li>';
+		errorMessageText += '<li>Cold Water Temperature must be a number.</li>';
 	}
 	if (isNaN(wbtf)) {
-		errorMessageText += '<li>Wet Bulb Temperature&#176;F must be a number.</li>';
+		errorMessageText += '<li>Wet Bulb Temperature must be a number.</li>';
 	}
 
 	if (errorMessageText == '') {
 		if (cwtf >= hwtf) {
-			errorMessageText += '<li>Cold Water Temperature &#176;F must be less than Hot Water Temperature &#176;F.</li>';
+			errorMessageText += '<li>Cold Water Temperature must be less than Hot Water Temperature.</li>';
 		}
 		if (wbtf >= cwtf) {
-			errorMessageText += '<li>Wet Bulb Temperature &#176;F must be less than Cold Water Temperature &#176;F.</li>';
+			errorMessageText += '<li>Wet Bulb Temperature must be less than Cold Water Temperature.</li>';
 		}
 		if (wbtf > ( cwtf - 4)){
-			errorMessageText += '<li>Wet Bulb Temperature &#176;F must be at least 4&#176;F colder than Cold Water Temperature &#176;F.</li>';
+			errorMessageText += '<li>Wet Bulb Temperature must be at least 4&#176;F colder than Cold Water Temperature.</li>';
 		}
 	}
 
@@ -83,39 +83,7 @@ function calculate() {
 		tons = (nominalCoolingLoad * capacityFactor); // corrected cooling load (in Chiller Tons):
 
 		tonsDisplay = tons.toFixed(0);
-
-		if (tons <= 1080) {
-			dutyResultText += tonsDisplay+' Tons<br />Your load requires 1 Module 1 - Extra Duty Unit.';
-		}
-		if (tons > 1080 && tons <= 2160) {
-			dutyResultText += tonsDisplay+' Tons<br />Your load requires 2 Module 1 - Extra Duty Units or 1 Module 2 - Super Duty Unit.';
-		}
-		if (tons == 2160) {
-			dutyResultText += tonsDisplay+' Tons<br />Your load requires 1 Module 2 - Super Duty Units.';
-		}
-		if (tons > 2160 && tons <= 3240) {
-			dutyResultText += tonsDisplay+' Tons<br />Your load requires 2 Module 2 - Super Duty Units.';
-		}
-		if (tons == 3240) {
-			dutyResultText += tonsDisplay+' Tons<br />Your load requires 1 Module 3 - Maximum Duty.';
-		}
-		if (tons > 3240 && tons <= 5400) {
-			dutyResultText += tonsDisplay+' Tons<br />Your load requires 1 Module 3 - Maximum Duty and 1 Module 2 - Super Duty Units.';
-		}
-		if (tons > 5400 && tons < 6480) {
-			dutyResultText += tonsDisplay+' Tons<br />Your load requires 2 Module 3 - Maximum Duty Units.';
-		}
-
-		if (tons >= 6480) {
-			m3 = Math.floor(tons / 3240);
-			remander = (tons - (m3 * 3240));
-
-			if (remander <= 1080) {
-				dutyResultText += tonsDisplay+' Tons<br />Your load requires '+m3+' Module 3 - Maximum Duty Units and 1 Module 1 - Extra Duty Unit.';
-			} else {
-				dutyResultText += tonsDisplay+' Tons<br />Your load requires '+m3+' Module 3 - Maximum Duty Units and 1 Module 2 - Super Duty Units.';
-			}
-		}
+		dutyResultText += '<strong>Tonnage Results:</strong><br>'+tonsDisplay+' Tons';
 
 		data = "fgpm="+fgpm;
 		data += "&hwtf="+hwtf;
