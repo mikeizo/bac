@@ -7712,6 +7712,8 @@ legend {
         background-color: #eef2f5; }
       .navbar-expand-lg .navbar-custom .dropdown-menu .dropdown-item .is-active {
         color: #0079c2; }
+  .navbar-expand-lg .navbar-custom .dropdown-toggle.show {
+    background-color: #eef2f5; }
   .navbar-expand-lg .navbar-custom .dropdown-toggle:after {
     font-size: 0.7rem;
     margin-left: 0.5em;

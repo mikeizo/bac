@@ -137,6 +137,9 @@
     }
   }
   .dropdown-toggle {
+    &.show {
+      background-color: $gray;
+    }
     &:after {
       font-size: 0.7rem;
       margin-left: 0.5em;
