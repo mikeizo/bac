@@ -45,10 +45,10 @@ function calculate() {
 		errorMessageText += '<li>Flow (Gallons Per Minute) must be a number.</li>';
 	}
 	if (isNaN(hwtf)) {
-		errorMessageText += '<li>Hot Water Temperature must be a number.</li>';
+		errorMessageText += '<li>Entering Water Temperature must be a number.</li>';
 	}
 	if (isNaN(cwtf)) {
-		errorMessageText += '<li>Cold Water Temperature must be a number.</li>';
+		errorMessageText += '<li>Leaving Water Temperature must be a number.</li>';
 	}
 	if (isNaN(wbtf)) {
 		errorMessageText += '<li>Wet Bulb Temperature must be a number.</li>';
@@ -56,13 +56,13 @@ function calculate() {
 
 	if (errorMessageText == '') {
 		if (cwtf >= hwtf) {
-			errorMessageText += '<li>Cold Water Temperature must be less than Hot Water Temperature.</li>';
+			errorMessageText += '<li>Leaving Water Temperature must be less than Entering Water Temperature.</li>';
 		}
 		if (wbtf >= cwtf) {
-			errorMessageText += '<li>Wet Bulb Temperature must be less than Cold Water Temperature.</li>';
+			errorMessageText += '<li>Wet Bulb Temperature must be less than Leaving Water Temperature.</li>';
 		}
 		if (wbtf > ( cwtf - 4)){
-			errorMessageText += '<li>Wet Bulb Temperature must be at least 4&#176;F colder than Cold Water Temperature.</li>';
+			errorMessageText += '<li>Wet Bulb Temperature must be at least 4&#176;F colder than Leaving Water Temperature.</li>';
 		}
 	}
 
@@ -82,7 +82,7 @@ function calculate() {
 		capacityFactor = (1688.67 *  (Math.pow(range, (0.0624 * (Math.log(appraoch)) - 0.6951))) * (Math.pow(appraoch, (0.053 * (Math.log(range)) - 0.8755))) * (Math.pow(wbtf, -1.025)) - 0.17455);
 		tons = (nominalCoolingLoad * capacityFactor); // corrected cooling load (in Chiller Tons):
 
-		tonsDisplay = tons.toFixed(0);
+		tonsDisplay = tons.toFixed(5);
 		dutyResultText += '<strong>Tonnage Results:</strong><br>'+tonsDisplay+' Tons';
 
 		data = "fgpm="+fgpm;
