@@ -1,3 +1,4 @@
+// Navigation animation class
 let navButton = document.querySelector('#nav-mobile');
 let navIcons = document.querySelector('#nav-icons');
 
@@ -5,21 +6,8 @@ navButton.onclick = function() {
   navIcons.classList.toggle('open');
 }
 
-function calculateTon() {
-  let gpm = document.getElementById('gpm').value
 
-
-  console.log(gpm)
-
-  document.getElementById('output').innerHTML=gpm;
-
-  return false
-
-}
-
-
-
-
+// Calculate Tonnage
 function calculate() {
   console.log('test');
 	let fgpm = parseFloat(document.getElementById('fgpm').value);
