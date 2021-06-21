@@ -45,3 +45,4 @@ sites/simpletest
 node_modules/
 /example.gitignore
 .vscode
+/README.md
