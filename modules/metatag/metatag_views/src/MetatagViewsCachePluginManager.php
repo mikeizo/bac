@@ -8,9 +8,14 @@ use Drupal\Core\Cache\CacheableDependencyInterface;
 use Drupal\views\Plugin\views\cache\CachePluginBase;
 use Drupal\views\Plugin\ViewsPluginManager;
 
+/**
+ * Custom cache plugin system for Views.
+ */
 class MetatagViewsCachePluginManager implements PluginManagerInterface, CachedDiscoveryInterface, CacheableDependencyInterface {
 
   /**
+   * {@inheritdoc}
+   *
    * @var \Drupal\views\Plugin\ViewsPluginManager
    */
   protected $viewsPluginManager;
@@ -19,15 +24,20 @@ class MetatagViewsCachePluginManager implements PluginManagerInterface, CachedDi
    * MetatagViewsCachePluginManager constructor.
    *
    * @param \Drupal\views\Plugin\ViewsPluginManager $views_plugin_manager
+   *   The ViewsPluginManager as argument.
    */
   public function __construct(ViewsPluginManager $views_plugin_manager) {
     $this->viewsPluginManager = $views_plugin_manager;
   }
 
   /**
+   * {@inheritdoc}
+   *
    * @param \Drupal\views\Plugin\views\cache\CachePluginBase $plugin
+   *   The CachePluginBase as argument.
    *
    * @return \Drupal\metatag_views\MetatagViewsCacheWrapper
+   *   Return new MetatagViewsCacheWrapper
    */
   protected function wrap(CachePluginBase $plugin) {
     return new MetatagViewsCacheWrapper($plugin);
@@ -37,14 +47,17 @@ class MetatagViewsCachePluginManager implements PluginManagerInterface, CachedDi
    * {@inheritdoc}
    */
   public function createInstance($plugin_id, array $configuration = []) {
-    return $this->wrap($this->viewsPluginManager->createInstance($plugin_id, $configuration));
+    $plugin = $this->viewsPluginManager->createInstance($plugin_id, $configuration);
+    return $plugin_id === 'none' ? $plugin : $this->wrap($plugin);
   }
 
   /**
    * {@inheritdoc}
    */
   public function getInstance(array $options) {
-    return $this->wrap($this->viewsPluginManager->getInstance($options));
+    /** @var \Drupal\views\Plugin\views\cache\CachePluginBase $plugin */
+    $plugin = $this->viewsPluginManager->getInstance($options);
+    return $plugin->getPluginId() === 'none' ? $plugin : $this->wrap($plugin);
   }
 
   /**

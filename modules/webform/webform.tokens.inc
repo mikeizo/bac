@@ -5,8 +5,8 @@
  * Builds placeholder replacement tokens for webforms and submissions.
  */
 
-use Drupal\Component\Utility\NestedArray;
 use Drupal\Component\Render\MarkupInterface;
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Datetime\Entity\DateFormat;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Render\BubbleableMetadata;
@@ -15,10 +15,10 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\user\Entity\User;
 use Drupal\webform\Element\WebformHtmlEditor;
-use Drupal\webform\Plugin\WebformElementManagerInterface;
-use Drupal\webform\Plugin\WebformElementEntityReferenceInterface;
 use Drupal\webform\Plugin\WebformElement\WebformComputedBase;
 use Drupal\webform\Plugin\WebformElement\WebformMarkupBase;
+use Drupal\webform\Plugin\WebformElementEntityReferenceInterface;
+use Drupal\webform\Plugin\WebformElementManagerInterface;
 use Drupal\webform\Utility\WebformDateHelper;
 use Drupal\webform\Utility\WebformHtmlHelper;
 use Drupal\webform\Utility\WebformLogicHelper;
@@ -63,13 +63,21 @@ function webform_token_info() {
     'name' => t('IP address'),
     'description' => t('The IP address that was used when submitting the webform submission.'),
   ];
+  $webform_submission['source-type'] = [
+    'name' => t('Source entity type'),
+    'description' => t('The source entity type.'),
+  ];
+  $webform_submission['source-id'] = [
+    'name' => t('Source entity type'),
+    'description' => t('The source entity type.'),
+  ];
   $webform_submission['source-title'] = [
     'name' => t('Source URL'),
     'description' => t('The Title of the source entity or webform.'),
   ];
   $webform_submission['source-url'] = [
     'name' => t('Source URL'),
-    'description' => t('The URL the user submitted the webform submission.'),
+    'description' => t('The URL where the user submitted the webform submission.'),
     'type' => 'url',
   ];
   $webform_submission['token-view-url'] = [
@@ -273,7 +281,7 @@ function webform_token_info() {
     'type' => 'date',
   ];
   $webform_submission['webform'] = [
-    'name' => t('Webform'),
+    'name' => t('Webform', [], ['context' => 'form']),
     'description' => t('The webform that the webform submission belongs to.'),
     'type' => 'webform',
   ];
@@ -347,6 +355,20 @@ function webform_token_info() {
     'name' => t('Close date'),
     'description' => t('The date the webform is closed to new submissions.'),
     'type' => 'date',
+  ];
+  $webform['settings'] = [
+    'name' => t('Settings'),
+    'description' => Markup::create(t('Webform settings tokens.') .
+      _webform_token_render_more(t('Learn about Webform settings tokens'),
+        '<ul>' .
+        '<li>confirmation_title</li>' .
+        '<li>confirmation_message</li>' .
+        '<li>form_open_message</li>' .
+        '<li>form_close_message</li>' .
+        '</ul>'
+      )
+    ),
+    'dynamic' => TRUE,
   ];
   $webform['element'] = [
     'name' => t('Element properties'),
@@ -533,6 +555,14 @@ function webform_tokens($type, $tokens, array $data, array $options, BubbleableM
 
         case 'language':
           $replacements[$original] = \Drupal::languageManager()->getLanguage($webform_submission->langcode->value)->getName();
+          break;
+
+        case 'source-type':
+          $replacements[$original] = ($source_entity) ? $source_entity->getEntityTypeId() : '';
+          break;
+
+        case 'source-id':
+          $replacements[$original] = ($source_entity) ? $source_entity->id() : '';
           break;
 
         case 'source-title':
@@ -803,6 +833,17 @@ function webform_tokens($type, $tokens, array $data, array $options, BubbleableM
     }
 
     /* Dynamic tokens. */
+
+    if (($settings_tokens = $token_service->findWithPrefix($tokens, 'settings'))) {
+      /** @var \Drupal\webform\WebformTokenManagerInterface $token_manager */
+      $token_manager = \Drupal::service('webform.token_manager');
+      foreach ($settings_tokens as $key => $original) {
+        $token_value = $webform->getSetting($key, '');
+        $replacements[$original] = (!is_array($token_value))
+          ? $token_manager->replace($token_value, NULL, $data, $options, $bubbleable_metadata)
+          : '';
+      }
+    }
 
     if (($element_tokens = $token_service->findWithPrefix($tokens, 'element'))) {
       foreach ($element_tokens as $key => $original) {

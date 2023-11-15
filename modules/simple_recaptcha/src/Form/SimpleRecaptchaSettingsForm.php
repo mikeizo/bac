@@ -104,6 +104,16 @@ class SimpleRecaptchaSettingsForm extends ConfigFormBase {
       '#description' => $this->t('Secret key will be used internally to connect with reCaptcha API and verify responses.'),
     ];
 
+    $form['keys_v3']['hide_badge_v3'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Hide reCAPTCHA badge'),
+      '#default_value' => $config->get('hide_badge_v3'),
+      '#description' => $this->t(
+        'Hide recaptcha badge by including mandatory text before submit (See <a href=":url" target="_blank">documentation</a>).',
+        [':url' => 'https://developers.google.com/recaptcha/docs/faq#id-like-to-hide-the-recaptcha-badge.-what-is-allowed']
+      ),
+    ];
+
     $form['form_ids'] = [
       '#type' => 'textarea',
       '#description' => $this->t('Add comma separated list of form ids, e.g.: user_login_form,user_pass,user_register_form.<br />Support wildcard eg: user_* to apply on all user forms.'),
@@ -134,6 +144,7 @@ class SimpleRecaptchaSettingsForm extends ConfigFormBase {
       ->set('secret_key', $form_state->getValue('secret_key'))
       ->set('site_key_v3', $form_state->getValue('site_key_v3'))
       ->set('secret_key_v3', $form_state->getValue('secret_key_v3'))
+      ->set('hide_badge_v3', $form_state->getValue('hide_badge_v3'))
       ->set('recaptcha_type', $form_state->getValue('recaptcha_type'))
       ->set('v3_score', $form_state->getValue('v3_score'))
       ->set('recaptcha_use_globally', $form_state->getValue('recaptcha_use_globally'))

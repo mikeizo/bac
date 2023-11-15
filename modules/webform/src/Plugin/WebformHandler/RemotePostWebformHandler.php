@@ -3,13 +3,14 @@
 namespace Drupal\webform\Plugin\WebformHandler;
 
 use Drupal\Component\Render\MarkupInterface;
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\RedirectCommand;
 use Drupal\Core\EventSubscriber\MainContentViewSubscriber;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\TrustedRedirectResponse;
 use Drupal\Core\Serialization\Yaml;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\webform\Element\WebformMessage;
@@ -76,6 +77,13 @@ class RemotePostWebformHandler extends WebformHandlerBase {
    * @var \Drupal\webform\Plugin\WebformElementManagerInterface
    */
   protected $elementManager;
+
+  /**
+   * The current request.
+   *
+   * @var \Symfony\Component\HttpFoundation\Request
+   */
+  protected $request;
 
   /**
    * The request stack.
@@ -145,8 +153,14 @@ class RemotePostWebformHandler extends WebformHandlerBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    // @todo Determine why entity field manager dependency can't be injected.
-    $field_names = array_keys(\Drupal::service('entity_field.manager')->getBaseFieldDefinitions('webform_submission'));
+    // We can't inject the entity field manager dependency because
+    // RemotePostWebformHandler::defaultConfiguration() is called with in
+    // RemotePostWebformHandler::create().
+    // @see \Drupal\webform\Plugin\WebformHandlerBase::create
+    // @see https://www.drupal.org/project/webform/issues/3285846
+    /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager */
+    $entity_field_manager = \Drupal::service('entity_field.manager');
+    $field_names = array_keys($entity_field_manager->getBaseFieldDefinitions('webform_submission'));
     $excluded_data = array_combine($field_names, $field_names);
     return [
       'method' => 'POST',
@@ -229,7 +243,7 @@ class RemotePostWebformHandler extends WebformHandlerBase {
       $t_args = [
         '@state' => $state_item['state'],
         '@title' => $state_item['label'],
-        '@url' => 'http://www.mycrm.com/form_' . $state . '_handler.php',
+        '@url' => 'https://www.mycrm.com/form_' . $state . '_handler.php',
       ];
       $form[$state] = [
         '#type' => 'details',
@@ -331,7 +345,7 @@ class RemotePostWebformHandler extends WebformHandlerBase {
       '#type' => 'webform_codemirror',
       '#mode' => 'yaml',
       '#title' => $this->t('Custom options'),
-      '#description' => $this->t('Enter custom <a href=":href">request options</a> that will be used by the Guzzle HTTP client. Request options can include custom headers.', [':href' => 'http://docs.guzzlephp.org/en/stable/request-options.html']),
+      '#description' => $this->t('Enter custom <a href=":href">request options</a> that will be used by the Guzzle HTTP client. Request options can include custom headers.', [':href' => 'https://docs.guzzlephp.org/en/stable/request-options.html']),
       '#default_value' => $this->configuration['custom_options'],
     ];
     $form['additional']['message'] = [
@@ -927,7 +941,7 @@ class RemotePostWebformHandler extends WebformHandlerBase {
       '#title' => $this->t('Request options'),
       '#wrapper_attributes' => ['style' => 'margin: 0'],
       'data' => [
-        '#markup' => htmlspecialchars(Yaml::encode($request_options)),
+        '#markup' => Html::escape(Yaml::encode($request_options)),
         '#prefix' => '<pre>',
         '#suffix' => '</pre>',
       ],
@@ -947,7 +961,7 @@ class RemotePostWebformHandler extends WebformHandlerBase {
         '#title' => $this->t('Response header:'),
         '#wrapper_attributes' => ['style' => 'margin: 0'],
         'data' => [
-          '#markup' => htmlspecialchars(Yaml::encode($response->getHeaders())),
+          '#markup' => Html::escape(Yaml::encode($response->getHeaders())),
           '#prefix' => '<pre>',
           '#suffix' => '</pre>',
         ],
@@ -957,7 +971,7 @@ class RemotePostWebformHandler extends WebformHandlerBase {
         '#wrapper_attributes' => ['style' => 'margin: 0'],
         '#title' => $this->t('Response body:'),
         'data' => [
-          '#markup' => htmlspecialchars($response->getBody()),
+          '#markup' => Html::escape($response->getBody()),
           '#prefix' => '<pre>',
           '#suffix' => '</pre>',
         ],
@@ -969,7 +983,7 @@ class RemotePostWebformHandler extends WebformHandlerBase {
           '#wrapper_attributes' => ['style' => 'margin: 0'],
           '#title' => $this->t('Response data:'),
           'data' => [
-            '#markup' => Yaml::encode($response_data),
+            '#markup' => Html::escape(Yaml::encode($response_data)),
             '#prefix' => '<pre>',
             '#suffix' => '</pre>',
           ],
@@ -983,7 +997,7 @@ class RemotePostWebformHandler extends WebformHandlerBase {
           '#title' => $this->t('Response tokens:'),
           'description' => ['#markup' => $this->t('Below tokens can ONLY be used to insert response data into value and hidden elements.')],
           'data' => [
-            '#markup' => implode(PHP_EOL, $tokens),
+            '#plain_text' => implode(PHP_EOL, $tokens),
             '#prefix' => '<pre>',
             '#suffix' => '</pre>',
           ],
@@ -1060,7 +1074,7 @@ class RemotePostWebformHandler extends WebformHandlerBase {
     }
 
     // Redirect the current request to the error url.
-    $error_url = $this->configuration['error_url'];
+    $error_url = $this->replaceTokens($this->configuration['error_url'], $this->getWebformSubmission());
     if ($error_url && PHP_SAPI !== 'cli') {
       // Convert error path to URL.
       if (strpos($error_url, '/') === 0) {
@@ -1109,11 +1123,13 @@ class RemotePostWebformHandler extends WebformHandlerBase {
       $status_code = $response->getStatusCode();
       foreach ($this->configuration['messages'] as $message_item) {
         if ((int) $message_item['code'] === (int) $status_code) {
-          return $message_item['message'];
+          return $this->replaceTokens($message_item['message'], $this->getWebformSubmission());
         }
       }
     }
-    return (!empty($this->configuration['message']) && $default) ? $this->configuration['message'] : '';
+    return (!empty($this->configuration['message']) && $default)
+      ? $this->replaceTokens($this->configuration['message'], $this->getWebformSubmission())
+      : '';
   }
 
   /**

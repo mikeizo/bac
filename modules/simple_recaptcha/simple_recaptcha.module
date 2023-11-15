@@ -35,6 +35,7 @@ function simple_recaptcha_form_alter(&$form, FormStateInterface $form_state, $fo
       $settings = [
         'v3_score' => $config->get('v3_score'),
         'recaptcha_action' => $info['form_id'],
+        'hide_badge_v3' => $config->get('hide_badge_v3'),
       ];
       \Drupal::service('simple_recaptcha.form_manager')->addReCaptchaInvisible($form, $info['form_id'], $settings);
       break;
@@ -80,7 +81,7 @@ function simple_recaptcha_library_info_build() {
   $url = 'https://www.google.com/recaptcha/api.js';
 
   // Optionally serve api.js from recaptcha.net domain (based on configuration).
-  if($config->get('recaptcha_use_globally')) {
+  if ($config->get('recaptcha_use_globally')) {
     $url = 'https://www.recaptcha.net/recaptcha/api.js';
   }
 
@@ -114,7 +115,6 @@ function simple_recaptcha_library_info_build() {
       ],
     ];
   }
-
 
   return $libraries;
 }

@@ -104,7 +104,6 @@ class SimpleSitemapDisplayExtender extends DisplayExtenderPluginBase {
    */
   public function buildOptionsForm(&$form, FormStateInterface $form_state) {
     if ($this->hasSitemapSettings() && $form_state->get('section') == 'simple_sitemap') {
-      $has_required_arguments = $this->hasRequiredArguments();
       $arguments_options = $this->getArgumentsOptions();
 
       $form['variants'] = [
@@ -167,11 +166,6 @@ class SimpleSitemapDisplayExtender extends DisplayExtenderPluginBase {
           '#states' => $states,
         ];
 
-        // Required arguments are always indexed.
-        foreach ($this->getRequiredArguments() as $argument_id) {
-          $variant_form['arguments'][$argument_id]['#disabled'] = TRUE;
-        }
-
         // Max links with arguments.
         $variant_form['max_links'] = [
           '#type' => 'number',
@@ -179,7 +173,7 @@ class SimpleSitemapDisplayExtender extends DisplayExtenderPluginBase {
           '#description' => $this->t('The maximum number of link variations to be indexed for this display. If left blank, each argument will create link variations for this display. Use with caution, as a large number of argument values​can significantly increase the number of sitemap links.'),
           '#default_value' => $settings['max_links'],
           '#min' => 1,
-          '#access' => !empty($arguments_options) || $has_required_arguments,
+          '#access' => !empty($arguments_options),
           '#states' => $states,
         ];
       }
@@ -194,11 +188,8 @@ class SimpleSitemapDisplayExtender extends DisplayExtenderPluginBase {
    */
   public function validateOptionsForm(&$form, FormStateInterface $form_state) {
     if ($this->hasSitemapSettings() && $form_state->get('section') == 'simple_sitemap') {
-      $required_arguments = $this->getRequiredArguments();
-
       foreach (array_keys($this->variants) as $variant) {
-        $arguments = &$form_state->getValue(['variants', $variant, 'arguments'], []);
-        $arguments = array_merge($arguments, $required_arguments);
+        $arguments = $form_state->getValue(['variants', $variant, 'arguments'], []);
         $errors = $this->validateIndexedArguments($arguments);
 
         foreach ($errors as $message) {
@@ -296,14 +287,6 @@ class SimpleSitemapDisplayExtender extends DisplayExtenderPluginBase {
     if (isset($this->options['variants'][$variant])) {
       $settings = $this->options['variants'][$variant] + $settings;
     }
-
-    if (empty($this->displayHandler->getHandlers('argument'))) {
-      $settings['arguments'] = [];
-    }
-    else {
-      $required_arguments = $this->getRequiredArguments();
-      $settings['arguments'] = array_merge($settings['arguments'], $required_arguments);
-    }
     return $settings;
   }
 
@@ -315,50 +298,6 @@ class SimpleSitemapDisplayExtender extends DisplayExtenderPluginBase {
    */
   public function hasSitemapSettings() {
     return $this->displayHandler instanceof DisplayRouterInterface;
-  }
-
-  /**
-   * Gets required view arguments (presented in the path).
-   *
-   * @return array
-   *   View arguments IDs.
-   */
-  public function getRequiredArguments() {
-    $arguments = $this->displayHandler->getHandlers('argument');
-
-    if (!empty($arguments)) {
-      $bits = explode('/', $this->displayHandler->getPath());
-      $arg_counter = 0;
-
-      foreach ($bits as $bit) {
-        if ($bit == '%' || strpos($bit, '%') === 0) {
-          $arg_counter++;
-        }
-      }
-
-      if ($arg_counter > 0) {
-        $arguments = array_slice(array_keys($arguments), 0, $arg_counter);
-        return array_combine($arguments, $arguments);
-      }
-    }
-    return [];
-  }
-
-  /**
-   * Determines if the view path contains required arguments.
-   *
-   * @return bool
-   *   TRUE if the path contains required arguments, FALSE if not.
-   */
-  public function hasRequiredArguments() {
-    $bits = explode('/', $this->displayHandler->getPath());
-
-    foreach ($bits as $bit) {
-      if ($bit == '%' || strpos($bit, '%') === 0) {
-        return TRUE;
-      }
-    }
-    return FALSE;
   }
 
   /**

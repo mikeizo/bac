@@ -36,13 +36,13 @@ class SimpleRecaptchaWebformJavascriptTestBase extends WebDriverTestBase {
     'simple_recaptcha_webform_test',
     'file',
     'page_cache',
-    'dynamic_page_cache'
+    'dynamic_page_cache',
   ];
 
   /**
    * {@inheritdoc}
    */
-  protected $defaultTheme = 'bartik';
+  protected $defaultTheme = 'claro';
 
   /**
    * A simple user.
@@ -52,9 +52,21 @@ class SimpleRecaptchaWebformJavascriptTestBase extends WebDriverTestBase {
   private $user;
 
   /**
+   * {@inheritDoc}
+   */
+  protected function getMinkDriverArgs() {
+    // drupalCI chrome is executed via http://
+    // for example: http://chromedriver-jenkins-drupal-contrib-652354:9515
+    // due to this, we hit cross-origin errors when fetching ext. resources.
+    $args = json_decode(parent::getMinkDriverArgs(), TRUE);
+    $args[1]['chromeOptions']['args'][] = '--disable-web-security';
+    return json_encode($args, JSON_UNESCAPED_SLASHES);
+  }
+
+  /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
     $this->user = $this->drupalCreateUser([
       'administer site configuration',
@@ -76,7 +88,7 @@ class SimpleRecaptchaWebformJavascriptTestBase extends WebDriverTestBase {
    *
    * @see https://www.drupal.org/project/drupal/issues/913086
    *
-   * @TODO duplicate - move this logic to some sort of Trait.
+   * @todo duplicate - move this logic to some sort of Trait.
    */
   public function configureModule($type = 'v2') {
     $config = [

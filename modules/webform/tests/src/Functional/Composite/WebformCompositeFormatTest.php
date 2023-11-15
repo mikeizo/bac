@@ -3,9 +3,9 @@
 namespace Drupal\Tests\webform\Functional\Composite;
 
 use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
-use Drupal\Tests\webform\Functional\WebformBrowserTestBase;
 use Drupal\webform\WebformSubmissionInterface;
 
 /**
@@ -20,7 +20,7 @@ class WebformCompositeFormatTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['filter', 'address', 'webform'];
+  protected static $modules = ['address', 'webform'];
 
   /**
    * Webforms to load.
@@ -33,7 +33,6 @@ class WebformCompositeFormatTest extends WebformBrowserTestBase {
    * Tests element format.
    */
   public function testFormat() {
-
     /* ********************************************************************** */
     /* Format composite element as HTML and text */
     /* ********************************************************************** */

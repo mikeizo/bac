@@ -1,4 +1,4 @@
-(function($) {
+(function ($) {
   "use strict";
   Drupal.behaviors.simple_recaptcha_buttons = {
     attach: function (context, drupalSettings) {
@@ -26,11 +26,11 @@
 
         }
       }
-      if (typeof drupalSettings.simple_recaptcha != "undefined") {
+      if (typeof drupalSettings.simple_recaptcha !== 'undefined') {
         recaptchaButtons(drupalSettings.simple_recaptcha.form_ids);
       }
 
-      if (typeof drupalSettings.simple_recaptcha_v3 != "undefined") {
+      if (typeof drupalSettings.simple_recaptcha_v3 !== 'undefined') {
         recaptchaButtons(drupalSettings.simple_recaptcha_v3.forms);
       }
 

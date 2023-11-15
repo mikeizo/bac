@@ -19,7 +19,8 @@
         "drupal/core-composer-scaffold": "^9.1",
         "drupal/core-project-message": "^9.1",
         "drupal/core-recommended": "^9.1",
-        "drupal/core-vendor-hardening": "^9.1"
+        "drupal/core-vendor-hardening": "^9.1",
+        "drupal/simple_sitemap": "^4.1"
     },
     "conflict": {
         "drupal/drupal": "*"
@@ -27,7 +28,13 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/installers": true,
+            "drupal/core-composer-scaffold": true,
+            "drupal/core-project-message": true,
+            "drupal/core-vendor-hardening": true
+        }
     },
     "extra": {
         "drupal-scaffold": {

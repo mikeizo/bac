@@ -29,7 +29,7 @@ class SimpleRecaptchaWebformTestBase extends BrowserTestBase {
    *
    * @var string
    */
-  protected $defaultTheme = 'bartik';
+  protected $defaultTheme = 'claro';
 
   /**
    * A simple user.
@@ -41,7 +41,7 @@ class SimpleRecaptchaWebformTestBase extends BrowserTestBase {
   /**
    * Perform initial setup tasks that run before every test method.
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
     $this->user = $this->drupalCreateUser([
       'administer site configuration',

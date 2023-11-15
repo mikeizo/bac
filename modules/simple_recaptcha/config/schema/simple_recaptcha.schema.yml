@@ -26,3 +26,6 @@ simple_recaptcha.config:
     recaptcha_use_globally:
       type: boolean
       label: 'Use reCAPTCHA globally'
+    hide_badge_v3:
+      type: boolean
+      label: 'Hide reCAPTCHA badge'

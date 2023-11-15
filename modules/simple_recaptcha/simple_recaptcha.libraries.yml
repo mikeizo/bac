@@ -9,7 +9,7 @@ simple_recaptcha:
   dependencies:
     - core/jquery
     - core/drupal
-    - core/jquery.once
+    - core/once
     - core/drupalSettings
     - simple_recaptcha/recaptcha
 simple_recaptcha_v3:
@@ -20,6 +20,12 @@ simple_recaptcha_v3:
   dependencies:
     - core/jquery
     - core/drupal
-    - core/jquery.once
+    - core/once
     - core/drupalSettings
     - simple_recaptcha/recaptcha_v3
+
+hide_badge:
+  version: 1.x
+  css:
+    component:
+      css/hide_badge.css: {}

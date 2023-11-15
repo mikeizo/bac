@@ -4,4 +4,5 @@ simple_recaptcha_test.simple_recaptcha_test_form:
     _form: 'Drupal\simple_recaptcha_test\Form\SimpleRecaptchaTestForm'
     _title: 'Simple reCAPTCHA test form'
   requirements:
+  # For tests.
     _access: 'TRUE'

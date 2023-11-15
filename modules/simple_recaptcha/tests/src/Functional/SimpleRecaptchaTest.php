@@ -56,6 +56,7 @@ class SimpleRecaptchaTest extends SimpleRecaptchaTestBase {
       'secret_key' => '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe',
       'form_ids' => 'user_login_form,user_pass,user_register_form',
     ], t('Save configuration'));
+    $this->htmlOutput();
     $this->assertSession()->pageTextContains('The configuration options have been saved.');
 
     // Ensure that config has been saved.
@@ -95,7 +96,7 @@ class SimpleRecaptchaTest extends SimpleRecaptchaTestBase {
     $this->drupalLogout();
     $this->drupalGet('/user/login');
     $this->assertSession()->pageTextContains('Log in');
-    $this->assertRaw('<script src="https://www.recaptcha.net/recaptcha/api.js" defer async></script>');
+    $this->assertSession()->responseContains('<script src="https://www.recaptcha.net/recaptcha/api.js" defer async></script>');
   }
 
 }

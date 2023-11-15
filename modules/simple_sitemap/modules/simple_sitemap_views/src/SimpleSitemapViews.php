@@ -137,32 +137,6 @@ class SimpleSitemapViews {
   }
 
   /**
-   * Gets the display extender.
-   *
-   * @param \Drupal\views\ViewExecutable $view
-   *   A view executable instance.
-   * @param string|null $display_id
-   *   The display id. If empty uses the current display.
-   *
-   * @return \Drupal\simple_sitemap_views\Plugin\views\display_extender\SimpleSitemapDisplayExtender|null
-   *   The display extender.
-   */
-  public function getDisplayExtender(ViewExecutable $view, $display_id = NULL) {
-    // Ensure the display was correctly set.
-    if (!$view->setDisplay($display_id)) {
-      return NULL;
-    }
-
-    $extenders = $view->display_handler->getExtenders();
-    $extender = isset($extenders[self::PLUGIN_ID]) ? $extenders[self::PLUGIN_ID] : NULL;
-
-    if ($extender instanceof SimpleSitemapDisplayExtender) {
-      return $extender;
-    }
-    return NULL;
-  }
-
-  /**
    * Gets the sitemap settings for view display.
    *
    * @param \Drupal\views\ViewExecutable $view
@@ -176,10 +150,16 @@ class SimpleSitemapViews {
    *   The sitemap settings if the display is indexed, NULL otherwise.
    */
   public function getSitemapSettings(ViewExecutable $view, $variant, $display_id = NULL) {
-    $extender = $this->getDisplayExtender($view, $display_id);
+    // Ensure the display was correctly set.
+    if (!$view->setDisplay($display_id)) {
+      return NULL;
+    }
+
+    $extenders = $view->display_handler->getExtenders();
+    $extender = isset($extenders[self::PLUGIN_ID]) ? $extenders[self::PLUGIN_ID] : NULL;
 
     // Retrieve the sitemap settings from the extender.
-    if ($extender && $extender->hasSitemapSettings()) {
+    if ($extender instanceof SimpleSitemapDisplayExtender && $extender->hasSitemapSettings()) {
       $settings = $extender->getSitemapSettings($variant);
 
       if ($settings['index']) {
@@ -207,31 +187,14 @@ class SimpleSitemapViews {
     $indexable_arguments = [];
 
     // Find indexable arguments.
-    if ($settings) {
+    if ($settings && !empty($settings['arguments'])) {
       $arguments = array_keys($view->display_handler->getHandlers('argument'));
-      $bits = explode('/', $view->getPath());
-      $arg_index = 0;
 
-      // Required arguments.
-      foreach ($bits as $bit) {
-        if ($bit == '%' || strpos($bit, '%') === 0) {
-          $indexable_arguments[] = isset($arguments[$arg_index]) ? $arguments[$arg_index] : $bit;
-          $arg_index++;
+      foreach ($arguments as $argument_id) {
+        if (empty($settings['arguments'][$argument_id])) {
+          break;
         }
-      }
-
-      if (!empty($settings['arguments'])) {
-        if ($arg_index > 0) {
-          $arguments = array_slice($arguments, $arg_index);
-        }
-
-        // Optional arguments.
-        foreach ($arguments as $argument_id) {
-          if (empty($settings['arguments'][$argument_id])) {
-            break;
-          }
-          $indexable_arguments[] = $argument_id;
-        }
+        $indexable_arguments[] = $argument_id;
       }
     }
     return $indexable_arguments;
@@ -473,10 +436,9 @@ class SimpleSitemapViews {
     }
 
     // Load views with display plugins that use the route.
-    $query = $this->viewStorage->getQuery()
-      ->condition('status', TRUE)
-      ->condition("display.*.display_plugin", $this->getRouterDisplayPluginIds(), 'IN')
-      ->accessCheck(TRUE);
+    $query = $this->viewStorage->getQuery();
+    $query->condition('status', TRUE);
+    $query->condition("display.*.display_plugin", $this->getRouterDisplayPluginIds(), 'IN');
     $view_ids = $query->execute();
 
     // If there are no such views, then return an empty array.

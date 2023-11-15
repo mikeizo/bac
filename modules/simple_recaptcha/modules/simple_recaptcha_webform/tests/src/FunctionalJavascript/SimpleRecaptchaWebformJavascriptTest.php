@@ -19,8 +19,7 @@ class SimpleRecaptchaWebformJavascriptTest extends SimpleRecaptchaWebformJavascr
     $assert->hiddenFieldExists('simple_recaptcha_type');
     $assert->hiddenFieldValueEquals('simple_recaptcha_type', 'v2');
 
-
-    // Fill in required fields
+    // Fill in required fields.
     $assert->fieldExists('name')->setValue('test name');
     $assert->fieldExists('email')->setValue('test@example.com');
     $assert->fieldExists('subject')->setValue('subject');
@@ -39,7 +38,7 @@ class SimpleRecaptchaWebformJavascriptTest extends SimpleRecaptchaWebformJavascr
   }
 
   /**
-   * Verify that libraries are loaded correctly for different reCAPTCHA versions.
+   * Verify that libraries are loaded properly for different reCAPTCHA versions.
    */
   public function testRecaptchaLibraries() {
     // Configure v3 reCAPTCHA and visit some pages so they get cached.
@@ -68,7 +67,7 @@ class SimpleRecaptchaWebformJavascriptTest extends SimpleRecaptchaWebformJavascr
    * @see \Drupal\Tests\media\FunctionalJavascript\CKEditorIntegrationTest::assignNameToCkeditorIframe
    * assignNameToCkeditorIframe
    *
-   * @TODO duplicate - move this logic to some sort of Trait.
+   * @todo duplicate - move this logic to some sort of Trait.
    */
   protected function assignNameToCaptchaIframe() {
     $javascript = <<<JS

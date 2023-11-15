@@ -3,9 +3,9 @@
 namespace Drupal\webform\Element;
 
 use Drupal\Component\Utility\NestedArray;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Render\Element\FormElement;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Template\Attribute;
 use Drupal\webform\Utility\WebformAccessibilityHelper;
 use Drupal\webform\Utility\WebformElementHelper;
@@ -681,7 +681,7 @@ class WebformMultiple extends FormElement {
         $row['_operations_']['add'] = [
           '#type' => 'image_button',
           '#title' => t('Add new @item after @item @number', ['@number' => $row_index + 1, '@item' => $element['#item_label']]),
-          '#src' => drupal_get_path('module', 'webform') . '/images/icons/plus.svg',
+          '#src' => \Drupal::service('extension.list.module')->getPath('webform') . '/images/icons/plus.svg',
           '#limit_validation_errors' => [],
           '#submit' => [[get_called_class(), 'addItemSubmit']],
           '#ajax' => $ajax_settings,
@@ -696,7 +696,7 @@ class WebformMultiple extends FormElement {
         $row['_operations_']['remove'] = [
           '#type' => 'image_button',
           '#title' => t('Remove @item @number', ['@number' => $row_index + 1, '@item' => $element['#item_label']]),
-          '#src' => drupal_get_path('module', 'webform') . '/images/icons/minus.svg',
+          '#src' => \Drupal::service('extension.list.module')->getPath('webform') . '/images/icons/minus.svg',
           '#limit_validation_errors' => [],
           '#submit' => [[get_called_class(), 'removeItemSubmit']],
           '#ajax' => $ajax_settings,
@@ -818,6 +818,10 @@ class WebformMultiple extends FormElement {
     $number_of_items_storage_key = static::getStorageKey($element, 'number_of_items');
     $number_of_items = $form_state->get($number_of_items_storage_key);
     $more_items = (int) $element['add']['more_items']['#value'];
+    // Limit to prevent out-of-memory errors.
+    if ($more_items > 100) {
+      $more_items = 100;
+    }
     $form_state->set($number_of_items_storage_key, $number_of_items + $more_items);
 
     // Reset values.

@@ -18,7 +18,7 @@ use Drupal\Core\Template\TwigEnvironment;
 use Drupal\Core\Theme\Registry;
 
 /**
- * Class ToolbarController.
+ * Controller for AdminToolbar Tools.
  *
  * @package Drupal\admin_toolbar_tools\Controller
  */
@@ -288,7 +288,7 @@ class ToolbarController extends ControllerBase {
    */
   public function themeRebuild() {
     $this->themeRegistry->reset();
-    $this->messenger()->addMessage($this->t('Theme registry rebuilded.'));
+    $this->messenger()->addMessage($this->t('Theme registry rebuilt.'));
     return new RedirectResponse($this->reloadPage());
   }
 

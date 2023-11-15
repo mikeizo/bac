@@ -4,7 +4,6 @@ namespace Drupal\simple_sitemap;
 
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Lock\LockBackendInterface;
 use Drupal\simple_sitemap\Queue\QueueWorker;
 use Drupal\Core\Path\PathValidator;
 use Drupal\Core\Config\ConfigFactory;
@@ -74,16 +73,6 @@ class Simplesitemap {
   protected $variants;
 
   /**
-   * @var \Drupal\Core\Lock\LockBackendInterface
-   */
-  protected $lock;
-
-  /**
-   * @var \Drupal\simple_sitemap\Logger
-   */
-  protected $logger;
-
-  /**
    * @var array
    */
   protected static $allowedLinkSettings = [
@@ -113,8 +102,6 @@ class Simplesitemap {
    * @param \Drupal\Core\Datetime\DateFormatter $date_formatter
    * @param \Drupal\Component\Datetime\Time $time
    * @param \Drupal\simple_sitemap\Queue\QueueWorker $queue_worker
-   * @param \Drupal\Core\Lock\LockBackendInterface $lock
-   * @param \Drupal\simple_sitemap\Logger $logger
    */
   public function __construct(
     EntityHelper $entity_helper,
@@ -126,9 +113,7 @@ class Simplesitemap {
     PathValidator $path_validator,
     DateFormatter $date_formatter,
     Time $time,
-    QueueWorker $queue_worker,
-    LockBackendInterface $lock = NULL,
-    Logger $logger = NULL
+    QueueWorker $queue_worker
   ) {
     $this->entityHelper = $entity_helper;
     $this->settings = $settings;
@@ -140,16 +125,6 @@ class Simplesitemap {
     $this->dateFormatter = $date_formatter;
     $this->time = $time;
     $this->queueWorker = $queue_worker;
-    if ($lock === NULL) {
-      @trigger_error('Calling Simplesitemap::__construct() without the $lock argument is deprecated in simple_sitemap:3.9. The $lock argument will be required in simple_sitemap:3.10.', E_USER_DEPRECATED);
-      $lock = \Drupal::service('lock');
-    }
-    $this->lock = $lock;
-    if ($logger === NULL) {
-      @trigger_error('Calling Simplesitemap::__construct() without the $logger argument is deprecated in simple_sitemap:3.9. The $logger argument will be required in simple_sitemap:3.10.', E_USER_DEPRECATED);
-      $logger = \Drupal::service('simple_sitemap.logger');
-    }
-    $this->logger = $logger;
   }
 
   /**
@@ -338,13 +313,11 @@ class Simplesitemap {
    * @return $this
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginException
+   *
+   * @todo Implement lock functionality.
    */
   public function generateSitemap($from = QueueWorker::GENERATE_TYPE_FORM) {
-    if (!$this->lock->lockMayBeAvailable(QueueWorker::LOCK_ID)) {
-      $this->logger->m('Unable to acquire a lock for sitemap generation.')->log('error')->display('error');
-      return $this;
-    }
-    switch ($from) {
+    switch($from) {
       case QueueWorker::GENERATE_TYPE_FORM:
       case QueueWorker::GENERATE_TYPE_DRUSH;
         $this->queueWorker->batchGenerateSitemap($from);
@@ -378,10 +351,6 @@ class Simplesitemap {
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
   public function rebuildQueue() {
-    if (!$this->lock->lockMayBeAvailable(QueueWorker::LOCK_ID)) {
-      $this->logger->m('Unable to acquire a lock for sitemap generation.')->log('error')->display('error');
-      return $this;
-    }
     $this->queueWorker->rebuildQueue($this->getVariants());
 
     return $this;
@@ -461,8 +430,8 @@ class Simplesitemap {
   /**
    * Sets settings for bundle or non-bundle entity types. This is done for the
    * currently set variant.
-   *
-   * Note that this method takes only the first set variant into account. See todo.
+   * Please note, this method takes only the first set
+   * variant into account. See todo.
    *
    * @param $entity_type_id
    * @param null $bundle_name

@@ -17,7 +17,7 @@ class WebformUiElementPropertiesTest extends WebformBrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['filter', 'file', 'taxonomy', 'webform', 'webform_ui'];
+  protected static $modules = ['file', 'taxonomy', 'webform', 'webform_ui'];
 
   /**
    * Webforms to load.
@@ -37,7 +37,7 @@ class WebformUiElementPropertiesTest extends WebformBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Create filters.
@@ -60,11 +60,12 @@ class WebformUiElementPropertiesTest extends WebformBrowserTestBase {
       $original_elements = $webform_elements->getElementsDecodedAndFlattened();
       foreach ($original_elements as $key => $original_element) {
         // Update the element via element edit form.
-        $this->drupalPostForm('/admin/structure/webform/manage/' . $webform_elements->id() . '/element/' . $key . '/edit', [], 'Save');
+        $this->drupalGet('/admin/structure/webform/manage/' . $webform_elements->id() . '/element/' . $key . '/edit');
+        $this->submitForm([], 'Save');
 
         // Check that the original and updated element are equal.
         $updated_element = $this->reloadWebform($webform_id)->getElementDecoded($key);
-        $this->assertEqual($original_element, $updated_element, "'$key'' properties is equal.");
+        $this->assertEquals($original_element, $updated_element, "'$key'' properties is equal.");
       }
     }
   }

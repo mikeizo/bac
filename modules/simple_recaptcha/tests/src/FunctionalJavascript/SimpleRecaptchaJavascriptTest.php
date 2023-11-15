@@ -22,7 +22,8 @@ class SimpleRecaptchaJavascriptTest extends SimpleRecaptchaJavascriptTestBase {
     // Check if hidden field added by the module are present.
     $this->webAssert->hiddenFieldExists('simple_recaptcha_token');
 
-    // This field shoudln't exist as it's added only when we configure v3 reCAPTCHA.
+    // This field shoudln't exist
+    // as it's added only when we configure v3 reCAPTCHA.
     $this->webAssert->hiddenFieldNotExists('simple_recaptcha_message');
 
     // Try to click on Log in button and render reCAPTCHA widget.
@@ -85,7 +86,9 @@ class SimpleRecaptchaJavascriptTest extends SimpleRecaptchaJavascriptTestBase {
   }
 
   /**
-   * Submit form as anonymous user and ensure that this submission doesn't keep the session cookies.
+   * Submit form as anonymous user.
+   *
+   * It ensures that this submission doesn't keep the session cookies.
    */
   public function testSessionData() {
     // Set up the module and visit password reset page.
@@ -104,7 +107,12 @@ class SimpleRecaptchaJavascriptTest extends SimpleRecaptchaJavascriptTestBase {
 
     // Final form submission, which should leave session cookies empty.
     $this->submitForm($edit, t('Submit'));
-    $this->assertSession()->pageTextContains(t('Further instructions have been sent to your email address.'));
+    if (version_compare(\Drupal::VERSION, '9.2', '<')) {
+      $this->assertSession()->pageTextContains('Further instructions have been sent to your email address.');
+    }
+    else {
+      $this->assertSession()->pageTextContains("If {$edit['name']} is a valid account, an email will be sent with instructions to reset your password.");
+    }
     $this->assertEmpty($this->getSessionCookies()->toArray());
   }
 

@@ -7,4 +7,3 @@ services:
       - '@logger.factory'
       - '@module_handler'
       - '@session'
-      - '@renderer'

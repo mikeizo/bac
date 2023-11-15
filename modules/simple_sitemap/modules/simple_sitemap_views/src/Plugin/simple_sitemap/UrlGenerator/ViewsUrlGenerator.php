@@ -127,13 +127,8 @@ class ViewsUrlGenerator extends EntityUrlGeneratorBase {
         'view_id' => $view->id(),
         'display_id' => $view->current_display,
       ];
-
-      $extender = $this->sitemapViews->getDisplayExtender($view);
-
       // View path without arguments.
-      if (!$extender->hasRequiredArguments()) {
-        $data_sets[] = $base_data_set + ['arguments' => NULL];
-      }
+      $data_sets[] = $base_data_set + ['arguments' => NULL];
 
       // Process indexed arguments.
       if ($args_ids = $this->sitemapViews->getIndexableArguments($view, $this->sitemapVariant)) {

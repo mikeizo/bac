@@ -6,11 +6,12 @@ use Drupal\Tests\UnitTestCase;
 use Drupal\simple_recaptcha\SimpleReCaptchaFormManager;
 
 /**
- * Class SimpleReCaptchaFormManagerTest.
+ * The SimpleReCaptchaFormManagerTest class.
  *
  * @group simple_recaptcha
  *
  * @coversDefaultClass \Drupal\simple_recaptcha\SimpleReCaptchaFormManager
+ * Performing a Test by form
  */
 class SimpleReCaptchaFormManagerTest extends UnitTestCase {
 
@@ -31,9 +32,21 @@ class SimpleReCaptchaFormManagerTest extends UnitTestCase {
    */
   public function dataFormIdProvider() {
     return [
-      ['user_login_form', ['user_login_form', 'user_pass', 'user_register_form'], TRUE],
-      ['user_pass', ['user_login_form', 'user_pass', 'user_register_form'], TRUE],
-      ['user_register_form', ['user_login_form', 'user_pass', 'user_register_form'], TRUE],
+      [
+        'user_login_form',
+        ['user_login_form', 'user_pass', 'user_register_form'],
+        TRUE,
+      ],
+      [
+        'user_pass',
+        ['user_login_form', 'user_pass', 'user_register_form'],
+        TRUE,
+      ],
+      [
+        'user_register_form',
+        ['user_login_form', 'user_pass', 'user_register_form'],
+        TRUE,
+      ],
       ['user_login_form', ['user_login*', 'user_register*'], TRUE],
       ['user_pass', ['user_login*', 'user_register*'], FALSE],
       ['user_register_form', ['user_login*', 'user_register*'], TRUE],

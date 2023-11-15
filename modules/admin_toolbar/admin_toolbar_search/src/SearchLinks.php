@@ -120,7 +120,7 @@ class SearchLinks {
       $content_entity = $entities['content_entity'];
       // Load the remaining items that were not loaded by the toolbar.
       $content_entity_bundle_storage = $this->entityTypeManager->getStorage($content_entity_bundle);
-      $bundles_ids = $content_entity_bundle_storage->getQuery()->range($max_bundle_number)->execute();
+      $bundles_ids = $content_entity_bundle_storage->getQuery()->sort('weight')->range($max_bundle_number)->execute();
       if (!empty($bundles_ids)) {
         $bundles = $this->entityTypeManager
           ->getStorage($content_entity_bundle)
@@ -240,7 +240,7 @@ class SearchLinks {
           $url_string = $url->toString();
 
           $links[] = [
-            'labelRaw' => $this->t('Menus > @menu_label > ', ['@menu_label' => $menu->label()]) . $this->t('Add link'),
+            'labelRaw' => $this->t('Menus > @menu_label > Add link', ['@menu_label' => $menu->label()]),
             'value' => $url_string,
           ];
         }
@@ -255,7 +255,7 @@ class SearchLinks {
             $url_string = $url->toString();
 
             $links[] = [
-              'labelRaw' => $this->t('Menus > @menu_label > ', ['@menu_label' => $menu->label()]) . $this->t('Delete'),
+              'labelRaw' => $this->t('Menus > @menu_label > Delete', ['@menu_label' => $menu->label()]),
               'value' => $url_string,
             ];
           }
@@ -268,7 +268,7 @@ class SearchLinks {
             $url_string = $url->toString();
 
             $links[] = [
-              'labelRaw' => $this->t('Menus > @menu_label > ', ['@menu_label' => $menu->label()]) . $this->t('Devel'),
+              'labelRaw' => $this->t('Menus > @menu_label > Devel', ['@menu_label' => $menu->label()]),
               'value' => $url_string,
             ];
           }

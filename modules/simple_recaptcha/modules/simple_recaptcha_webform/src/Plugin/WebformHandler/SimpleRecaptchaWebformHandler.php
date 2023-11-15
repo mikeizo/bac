@@ -2,17 +2,10 @@
 
 namespace Drupal\simple_recaptcha_webform\Plugin\WebformHandler;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\webform\WebformSubmissionConditionsValidatorInterface;
-use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\webform\Plugin\WebformHandlerBase;
 use Drupal\webform\WebformSubmissionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Session\AccountProxyInterface;
-use Drupal\simple_recaptcha\SimpleReCaptchaFormManager;
 
 /**
  * Webform submission handler plugin.
@@ -24,7 +17,6 @@ use Drupal\simple_recaptcha\SimpleReCaptchaFormManager;
  *   description = @Translation("Adds reCaptcha protection to the webform."),
  *   cardinality = \Drupal\webform\Plugin\WebformHandlerInterface::CARDINALITY_SINGLE,
  *   results = \Drupal\webform\Plugin\WebformHandlerInterface::RESULTS_IGNORED,
- *   submission = \Drupal\webform\Plugin\WebformHandlerInterface::SUBMISSION_REQUIRED,
  * )
  */
 class SimpleRecaptchaWebformHandler extends WebformHandlerBase {
@@ -61,6 +53,7 @@ class SimpleRecaptchaWebformHandler extends WebformHandlerBase {
       'recaptcha_type' => 'v2',
       'v3_score' => 90,
       'v3_error_message' => 'There was an error during validation of your form submission, please try to reload the page and submit form again.',
+      'hide_badge_v3' => FALSE
     ];
   }
 
@@ -121,6 +114,16 @@ class SimpleRecaptchaWebformHandler extends WebformHandlerBase {
       '#description' => $this->t('This error message will be shown when reCAPTCHA validation will fail.'),
     ];
 
+    $form['recaptcha']['hide_badge_v3'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Hide reCAPTCHA badge'),
+      '#default_value' => $this->configuration['hide_badge_v3'] ?? FALSE,
+      '#description' => $this->t(
+        'Hide recaptcha badge by including mandatory text before submit (See <a href=":url" target="_blank">documentation</a>).',
+        [':url' => 'https://developers.google.com/recaptcha/docs/faq#id-like-to-hide-the-recaptcha-badge.-what-is-allowed']
+      ),
+    ];
+
     return parent::buildConfigurationForm($form, $form_state);
   }
 
@@ -133,6 +136,7 @@ class SimpleRecaptchaWebformHandler extends WebformHandlerBase {
     $this->configuration['recaptcha_type'] = $values['recaptcha']['recaptcha_type'];
     $this->configuration['v3_score'] = $values['recaptcha']['v3_score'];
     $this->configuration['v3_error_message'] = $values['recaptcha']['v3_error_message'];
+    $this->configuration['hide_badge_v3'] = $values['recaptcha']['hide_badge_v3'];
   }
 
   /**

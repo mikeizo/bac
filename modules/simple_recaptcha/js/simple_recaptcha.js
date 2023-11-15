@@ -1,12 +1,12 @@
-(function($) {
+(function ($) {
   "use strict";
   Drupal.behaviors.simple_recaptcha = {
-    attach: function(context, drupalSettings) {
+    attach: function (context, drupalSettings) {
       // Grab form IDs from settings and loop through them.
        for(let formId in drupalSettings.simple_recaptcha.form_ids) {
-         const $form = $('form[data-recaptcha-id="'+formId+'"]');
+         const $form = $('form[data-recaptcha-id="' + formId + '"]');
 
-         $form.once("simple-recaptcha").each(function() {
+         $(once('simple-recaptcha', $form)).each(function () {
           // Disable submit buttons on form.
           const $submit = $form.find('.simple-recaptcha-submit');
           $submit.attr("data-disabled", "true");
@@ -19,24 +19,24 @@
           if (typeof Drupal.Ajax !== 'undefined' && typeof Drupal.Ajax.prototype.beforeSubmitSimpleRecaptchaOriginal === 'undefined') {
             Drupal.Ajax.prototype.beforeSubmitSimpleRecaptchaOriginal = Drupal.Ajax.prototype.beforeSubmit;
             Drupal.Ajax.prototype.beforeSubmit = function (form_values, element_settings, options) {
-              let currentFormIsRecaptcha = form_values.find(function (form_id){
+              let currentFormIsRecaptcha = form_values.find(function (form_id) {
                 return form_id.value === formId;
               });
-              if (currentFormIsRecaptcha !== undefined) {
+              if (typeof currentFormIsRecaptcha !== 'undefined') {
                 let $element = $(this.element);
                 let isFormActions = $element
                     .closest('.form-actions').length;
-                let $token = $form.find('input[name="simple_recaptcha_token"]').val();
-                if (isFormActions && ($token === 'undefined' || $token === '')) {
+                let token = $form.find('input[name="simple_recaptcha_token"]').val();
+                if (isFormActions && (typeof token === 'undefined' || token === '')) {
                   this.ajaxing = false;
                   return false;
                 }
               }
-              return this.beforeSubmitSimpleRecaptchaOriginal();
+              return this.beforeSubmitSimpleRecaptchaOriginal(this, arguments);
             }
           }
 
-          $submit.on("click", function(e) {
+          $submit.on("click", function (e) {
             if ($(this).attr("data-disabled") === "true") {
               // Get HTML IDs for further processing.
               const formHtmlId = $form.attr("id");
@@ -45,7 +45,7 @@
               const $captcha = $(this).closest("form").find(".recaptcha-wrapper");
 
               // If it is a first submission of that form, render captcha widget.
-              if ( $captcha.length && typeof captchas[formHtmlId] === "undefined" ) {
+              if ( $captcha.length && typeof captchas[formHtmlId] === 'undefined' ) {
                 captchas[formHtmlId] = grecaptcha.render($captcha.attr("id"), {
                   sitekey: drupalSettings.simple_recaptcha.sitekey
                 });
@@ -58,9 +58,9 @@
                 const response = grecaptcha.getResponse(captchas[formHtmlId]);
 
                 // Verify reCaptcha response.
-                if (typeof response !== "undefined" && response.length ) {
+                if (typeof response !== 'undefined' && response.length ) {
                   e.preventDefault();
-                  const $currentSubmit = $('[data-html-form-id="'+formHtmlId+'"]');
+                  const $currentSubmit = $('[data-html-form-id="' + formHtmlId + '"]');
                   $form.find('input[name="simple_recaptcha_token"]').val(response);
                   $currentSubmit.removeAttr("data-disabled");
                   // Click goes for regular forms, mousedown for AJAX forms.

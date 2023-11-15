@@ -3,6 +3,7 @@
 namespace Drupal\simple_recaptcha;
 
 use Drupal\Component\Serialization\Json;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -11,7 +12,6 @@ use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use GuzzleHttp\ClientInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Drupal\Core\Render\RendererInterface;
 
 /**
  * Provides helper service used to attach reCaptcha to forms.
@@ -57,13 +57,6 @@ class SimpleReCaptchaFormManager {
   protected $session;
 
   /**
-   * Renderer service.
-   *
-   * @var \Drupal\Core\Render\RendererInterface
-   **/
-  protected $renderer;
-
-  /**
    * Constructs a SimpleReCaptchaFormManager object.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
@@ -76,16 +69,13 @@ class SimpleReCaptchaFormManager {
    *   Module handler service.
    * @param \Symfony\Component\HttpFoundation\Session\SessionInterface $session
    *   The session service.
-   * @param \Drupal\Core\Render\RendererInterface $renderer
-   *   The renderer service.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, ClientInterface $client, LoggerChannelFactoryInterface $logger, ModuleHandlerInterface $module_handler, SessionInterface $session, RendererInterface $renderer) {
+  public function __construct(ConfigFactoryInterface $config_factory, ClientInterface $client, LoggerChannelFactoryInterface $logger, ModuleHandlerInterface $module_handler, SessionInterface $session) {
     $this->configFactory = $config_factory;
     $this->client = $client;
     $this->logger = $logger;
     $this->moduleHandler = $module_handler;
     $this->session = $session;
-    $this->renderer = $renderer;
   }
 
   /**
@@ -139,7 +129,14 @@ class SimpleReCaptchaFormManager {
     ];
 
     $form['#validate'][] = [$this, 'validateCaptchaToken'];
-    $this->renderer->addCacheableDependency($form, $config);
+
+    // Marge config cache into existing form cache metadata.
+    $form_cache = CacheableMetadata::createFromRenderArray($form);
+    $config_cache = CacheableMetadata::createFromObject($config);
+    $form_cache
+      ->merge($config_cache)
+      ->applyTo($form);
+
     $this->addSubmitHandler($form);
   }
 
@@ -185,7 +182,7 @@ class SimpleReCaptchaFormManager {
     $form['#attached']['drupalSettings']['simple_recaptcha_v3']['forms'][$form_id] = [
       'form_id' => $form_id,
       'score' => $configuration['v3_score'],
-      'error_message' => isset($configuration['v3_error_message']) ? $configuration['v3_error_message'] : NULL,
+      'error_message' => $configuration['v3_error_message'] ?? NULL,
       'action' => $configuration['recaptcha_action'],
     ];
 
@@ -209,8 +206,31 @@ class SimpleReCaptchaFormManager {
       '#type' => 'hidden',
     ];
 
+    if ($configuration['hide_badge_v3']) {
+      // Try to apply policy text before the form action buttons.
+      if (isset($form['actions'])) {
+        $form['actions']['#prefix'] = $this->getPolicyLinks();
+      }
+      else {
+        // If not doable, attach the markup at the end of form.
+        $form['recaptcha_policy'] = [
+          '#type' => 'markup',
+          '#markup' => $this->getPolicyLinks(),
+          '#weight' => 100,
+        ];
+      }
+      $form['#attached']['library'][] = 'simple_recaptcha/hide_badge';
+    }
+
     $form['#validate'][] = [$this, 'validateCaptchaToken'];
-    $this->renderer->addCacheableDependency($form, $config);
+
+    // Marge config cache into existing form cache metadata.
+    $form_cache = CacheableMetadata::createFromRenderArray($form);
+    $config_cache = CacheableMetadata::createFromObject($config);
+    $form_cache
+      ->merge($config_cache)
+      ->applyTo($form);
+
     $this->addSubmitHandler($form);
   }
 
@@ -243,7 +263,7 @@ class SimpleReCaptchaFormManager {
     ];
 
     $url = 'https://www.google.com/recaptcha/api/siteverify';
-    if($config->get('recaptcha_use_globally')) {
+    if ($config->get('recaptcha_use_globally')) {
       $url = 'https://www.recaptcha.net/recaptcha/api/siteverify';
     }
     $request = $this->client->post($url, [
@@ -262,7 +282,11 @@ class SimpleReCaptchaFormManager {
       $api_score = $api_response['score'] * 100;
 
       if ($api_score < $desired_score) {
-        $this->logger->get('simple_recaptcha')->notice($this->t('reCAPTCHA validation failed, reCAPTCHA score too low: @score (desired score was @desired_score)', ['@score' => $api_score, '@desired_score' => $desired_score]));
+        $this->logger->get('simple_recaptcha')->notice(
+          $this->t('reCAPTCHA validation failed, 
+          reCAPTCHA score too low: @score (desired score was @desired_score)',
+          ['@score' => $api_score, '@desired_score' => $desired_score])
+          );
         $form_state->setError($form, $message);
       }
     }
@@ -318,7 +342,7 @@ class SimpleReCaptchaFormManager {
    * @param array $form
    *   The form.
    */
-  protected function addSubmitHandler(&$form) {
+  protected function addSubmitHandler(array &$form) {
     // We need to register a custom submit handler to clear out session data
     // we no longer need, but we cannot just add it to the base form array
     // #submit property, since action-specific handlers override this. First we
@@ -326,15 +350,34 @@ class SimpleReCaptchaFormManager {
     $specificActionHandlersUsed = FALSE;
     if (isset($form['actions'])) {
       foreach (array_keys($form['actions']) as $action) {
-        if (isset($form['actions'][$action]['#submit'])) {
+        $isstring = is_string($action);
+        if (is_array($form['actions'][$action]) && isset($form['actions'][$action]['#submit'])) {
           $form['actions'][$action]['#submit'][] = [$this, 'clearSessionData'];
           $specificActionHandlersUsed = TRUE;
+          break;
         }
       }
     }
     if (!$specificActionHandlersUsed) {
       $form['#submit'][] = [$this, 'clearSessionData'];
     }
+  }
+
+  /**
+   * Helper to generate markup for reCAPTCHA policy /t&c links.
+   *
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
+   *   Policy text and links as translated string.
+   */
+  protected function getPolicyLinks() {
+    return $this->t('
+      <div class="recaptcha-legal">This site is protected by reCAPTCHA and the Google
+      <a target="_blank" href=":google-privacy">Privacy Policy</a> and <a target="_blank" href=":google-terms">Terms of Service</a> apply.</div>',
+      [
+        ':google-privacy' => 'https://policies.google.com/privacy',
+        ':google-terms' => 'https://policies.google.com/terms',
+      ]
+    );
   }
 
 }

@@ -81,3 +81,6 @@ The order of choosing submit button is following:
 
 For custom modules it is highly recommended following Form API `#button_type` logic. This solution is already implemented in core and in most popular contrib modules.
 
+#### Form actions 
+It's also worth to remember that form submit buttions which are part of `$form["actions"]`, should be wrapped with actions render element: 
+https://api.drupal.org/api/drupal/core%21lib%21Drupal%21Core%21Render%21Element%21Actions.php/class/Actions/9.2.x
